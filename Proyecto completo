@@ -1,0 +1,71 @@
+/// Código del bot 
+const Discord = require("discord.js");
+const client = new Discord.Client();
+require(`dotenv`).config() 
+
+////// Código para activar servidor en Repl.it //////
+const keepAlive = require('./server');
+const Monitor = require('ping-monitor');
+ 
+keepAlive();
+const monitor = new Monitor({
+    website: 'https://MonstrousMediumblueGigahertz.elhen.repl.co',
+    title: 'Secundario',
+    interval: 30 // minutes
+});
+ 
+monitor.on('up', (res) => console.log(`${res.website} está encedido.`));
+monitor.on('down', (res) => console.log(`${res.website} se ha caído - ${res.statusMessage}`));
+monitor.on('stop', (website) => console.log(`${website} se ha parado.`) );
+monitor.on('error', (error) => console.log(error));
+
+
+/// Bot Real ///
+
+client.on("ready", () => {
+    console.log("BOT LISTO!");
+});
+
+client.on("guildMemberAdd", async member => {
+    const canal = member.guild.channels.cache.find(c => c.id === "763420674705850429");
+    if(!canal) return;
+    const embed = new Discord.MessageEmbed()
+    .setAuthor(member.user.username, member.user.displayAvatarURL({format: "png", dynamic: true}))
+    .setDescription(`<@${member.id}> Disfruta de tu estancia en Nuclear Tula :heart: `)
+    .setThumbnail(member.user.displayAvatarURL({format: "png", dynamic: true}))
+    .setColor("RANDOM")
+    .setTimestamp()
+    .setFooter(member.guild.name)
+    canal.send(embed);
+});
+
+client.on("guildMemberRemove", async member => {
+    const canal = member.guild.channels.cache.find(c => c.id === "763420674705850429");
+    if(!canal) return;
+    const embed = new Discord.MessageEmbed()
+    .setAuthor(member.user.username, member.user.displayAvatarURL({format: "png", dynamic: true}))
+    .setDescription(`<@${member.id}> Hasta pronto :wave: `)
+    .setThumbnail(member.user.displayAvatarURL({format: "png", dynamic: true}))
+    .setColor("RANDOM")
+    .setTimestamp()
+    .setFooter(member.guild.name)
+    canal.send(embed);
+});
+
+client.login(process.env.TOKEN);
+
+/// Server de js ///
+
+const express = require('express')
+const server = express();
+ 
+server.all('/', (req, res) => {
+    res.send('El bot sigue encendido.');
+});
+ 
+module.exports = () => {
+    server.listen(3000, () => {
+        console.log('Servidor Listo.');
+    });
+    return true;
+}
